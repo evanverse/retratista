@@ -58,7 +58,7 @@ class State:  # Simple dirty hack for maintaining state
 if not hasattr(st, 'data'):  # Run only once. Save data globally
 
     st.state = State()
-    with st.spinner("Setting up... This might take a few minutes"):
+    with st.spinner("Configurando... Esto puede tomar unos minutos"):
         raw_w = pickle.load(open(os.path.join(DATA_ROOT, "sg2latents.pickle"), "rb"))
         # raw_TSNE = np.load(os.path.join(DATA_ROOT, 'TSNE.npy'))  # We are picking images here by index instead
         raw_attr = np.load(os.path.join(DATA_ROOT, 'attributes.npy'))
@@ -200,23 +200,23 @@ def get_changed_light(lights, light_names):
     return None
 
 def main():
-    attribute_names = ['Gender', 'Glasses', 'Yaw', 'Pitch', 'Baldness', 'Beard', 'Age', 'Expression']
+    attribute_names = ['Genero', 'Gafas', 'Yaw', 'Pitch', 'Calvicie', 'Barba', 'Edad', 'Expresión']
     attr_degree_list = [1.5, 2.5, 1., 1., 2, 1.7, 0.93, 1.]
 
-    light_names = ['Left->Right', 'Right->Left', 'Down->Up', 'Up->Down', 'No light', 'Front light']
+    light_names = ['Left->Right', 'Right->Left', 'Down->Up', 'Up->Down', 'No light', 'Luz Frontal']
 
-    att_min = {'Gender': 0, 'Glasses': 0, 'Yaw': -20, 'Pitch': -20, 'Baldness': 0, 'Beard': 0.0, 'Age': 0,
-               'Expression': 0}
-    att_max = {'Gender': 1, 'Glasses': 1, 'Yaw': 20, 'Pitch': 20, 'Baldness': 1, 'Beard': 1, 'Age': 65, 'Expression': 1}
+    att_min = {'Genero': 0, 'Gafas': 0, 'Yaw': -20, 'Pitch': -20, 'Calvicie': 0, 'Barba': 0.0, 'Edad': 0,
+               'Expresión': 0}
+    att_max = {'Genero': 1, 'Gafas': 1, 'Yaw': 20, 'Pitch': 20, 'Calvicie': 1, 'Barba': 1, 'Edad': 65, 'Expresión': 1}
 
 
-    with st.spinner("Setting up... This might take a few minutes... Please wait!"):
+    with st.spinner("Configurando... Puede tomar varios minutos... Por favor espera!"):
         all_w, all_attr, all_lights = np_copy(st.data["all_w"], st.data["all_attr"], st.data["all_lights"])
         pre_lighting = list(st.data["pre_lighting"])
         idx2w_init = get_idx2init(st.data["raw_w"])
         session, model, w_avg, flow_model = init_model()
 
-    idx_selected = st.selectbox("Choose an image:", list(range(len(idx2w_init))),
+    idx_selected = st.selectbox("Elije una imagen:", list(range(len(idx2w_init))),
                                 format_func= lambda opt : all_idx[opt])
 
     w_selected = all_w[idx_selected]
@@ -233,7 +233,7 @@ def main():
         st.state.w_prev = torch.Tensor(w_selected)
         st.state.light_current = torch.Tensor(lights_selected).float()
 
-    st.sidebar.markdown("# Attributes")
+    st.sidebar.markdown("# Atributos")
     attributes = {}
     for i, att in enumerate(attribute_names):
         attributes[att] = make_slider(att, float(att_min[att]), float(att_max[att]),
@@ -241,7 +241,7 @@ def main():
                                       key=hash(idx_selected*1e5 + i)  # re-render if index selected is changed!
                                       )
 
-    st.sidebar.markdown("# Lighting")
+    st.sidebar.markdown("# Iluminación")
     lights = {}
     for i, lt in enumerate(light_names):
         lights[lt] = make_slider(lt,
@@ -295,12 +295,12 @@ def main():
 
     col1, col2 = st.beta_columns(2)  # Columns feature of streamlit is still in beta. This line might require to be changed in future versions
     with col1:
-        st.image(img_source, caption="Generated", use_column_width=True)
+        st.image(img_source, caption="Generada", use_column_width=True)
 
     with col2:
         st.state.w_current = preserve_w_id(st.state.w_current, st.state.w_prev, i)
         img_target = generate_image(session, model, st.state.w_current)
-        st.image(img_target, caption="Target", use_column_width=True)
+        st.image(img_target, caption="Objetivo", use_column_width=True)
 
     st.state.z_current = flow_w_to_z(flow_model, st.state.w_current, att_new, lights_new)
     st.state.w_prev = torch.Tensor(st.state.w_current).clone().detach()
