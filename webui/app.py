@@ -9,7 +9,7 @@ st.set_page_config(
     page_icon=None,  # String, anything supported by st.image, or None.
 )
 import sys
-sys.path.insert(0, "../")
+sys.path.insert(0, "/content/StyleFlow")
 
 from options.test_options import TestOptions
 
@@ -35,7 +35,7 @@ Go wild!
 
 
 
-DATA_ROOT = "../data"
+DATA_ROOT = "data"
 HASH_FUNCS = {tf.Session: id,
               torch.nn.Module: id,
               Build_model: lambda _ : None,
@@ -102,7 +102,7 @@ def init_model():
         w_avg = model.Gs.get_var('dlatent_avg')
 
     prior = cnf(512, '512-512-512-512-512', 17, 1)
-    prior.load_state_dict(torch.load('../flow_weight/modellarge10k.pt'))
+    prior.load_state_dict(torch.load('flow_weight/modellarge10k.pt'))
     prior.eval()
 
     return session, model, w_avg, prior.cpu()
