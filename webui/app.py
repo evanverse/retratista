@@ -1,11 +1,11 @@
-# Author shariqfarooq123
+# Author shariqfarooq123 edited by Thoany
 
 import streamlit as st
 
 st.set_page_config(
     layout="wide",  # Can be "centered" or "wide"
     initial_sidebar_state="expanded",  # Can be "auto", "expanded", "collapsed"
-    page_title="StyleFlow",  # String or None. Strings get appended with "• Streamlit".
+    page_title="Facial Studio",  # String or None. Strings get appended with "• Streamlit".
     page_icon=None,  # String, anything supported by st.image, or None.
 )
 import sys
@@ -23,8 +23,6 @@ import os
 import tensorflow as tf
 import pickle
 import copy
-import base64
-from io import BytesIO
 
 
 """ # Welcome to SyleFlow WebUI demo (Beta)
@@ -201,18 +199,6 @@ def get_changed_light(lights, light_names):
             return i
     return None
 
-def get_image_download_link(img):
-	"""Generates a link allowing the PIL image to be downloaded
-	in:  PIL image
-	out: href string
-	"""
-	buffered = BytesIO()
-	img.save(buffered, format="JPEG")
-	img_str = base64.b64encode(buffered.getvalue()).decode()
-	href = f'<a href="data:file/jpg;base64,{img_str}">Download</a>'
-	return href
-
-
 def main():
     attribute_names = ['Gender', 'Glasses', 'Yaw', 'Pitch', 'Baldness', 'Beard', 'Age', 'Expression']
     attr_degree_list = [1.5, 2.5, 1., 1., 2, 1.7, 0.93, 1.]
@@ -315,7 +301,6 @@ def main():
         st.state.w_current = preserve_w_id(st.state.w_current, st.state.w_prev, i)
         img_target = generate_image(session, model, st.state.w_current)
         st.image(img_target, caption="Target", use_column_width=True)
-        st.markdown(get_image_download_link(img_target), unsafe_allow_html=True)
 
     st.state.z_current = flow_w_to_z(flow_model, st.state.w_current, att_new, lights_new)
     st.state.w_prev = torch.Tensor(st.state.w_current).clone().detach()
