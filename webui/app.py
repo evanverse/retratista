@@ -23,6 +23,8 @@ import os
 import tensorflow as tf
 import pickle
 import copy
+import base64
+from io import BytesIO
 
 
 """ # Welcome to SyleFlow WebUI demo (Beta)
